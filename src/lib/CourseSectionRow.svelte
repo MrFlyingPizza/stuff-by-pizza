@@ -44,7 +44,7 @@
 	</tr>
 </table>
 
-<style lang="scss">
+<style>
 	.day {
 		border: 1px solid black;
 		width: 50px;
