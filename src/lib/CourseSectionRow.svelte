@@ -18,7 +18,7 @@
 	let days: boolean[] = [false, false, false, false, false];
 
 	getCourseOutline(year, term, department, courseNumber, courseSection)
-		.then((response) => (outline = response.data))
+		.then((response) => (outline = response))
 		.catch((error) => error);
 
 	const abbrs = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
@@ -38,9 +38,9 @@
 <table>
 	<tr>
 		<td class="day">{courseSection}</td>
-			{#each days as day}
-				<td class={'day ' + (day ? 'dayon' : 'dayoff')}></td>
-			{/each}
+		{#each days as day}
+			<td class={'day ' + (day ? 'dayon' : 'dayoff')} />
+		{/each}
 	</tr>
 </table>
 
@@ -50,11 +50,11 @@
 		width: 50px;
 	}
 
-    .dayon {
-        background-color: aqua;
-    }
+	.dayon {
+		background-color: aqua;
+	}
 
-    .dayoff {
-        background-color: black;
-    }
+	.dayoff {
+		background-color: black;
+	}
 </style>

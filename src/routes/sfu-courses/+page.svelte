@@ -20,7 +20,7 @@
 	let termOptions: Term[] = [];
 	let departmentOptions: Department[] = [];
 
-	getYears().then((response) => (yearOptions = response.data));
+	getYears().then((response) => (yearOptions = response));
 
 	let termOptionsAbortController: AbortController;
 
@@ -29,7 +29,7 @@
 		if (selectedYear) {
 			termOptionsAbortController = new AbortController();
 			getTerms(selectedYear, termOptionsAbortController).then(
-				(response) => (termOptions = response.data)
+				(response) => (termOptions = response)
 			);
 		}
 	}
@@ -40,15 +40,15 @@
 		departmentOptionsAbortController?.abort();
 		if (selectedYear && selectedTerm) {
 			departmentOptionsAbortController = new AbortController();
-			getDepartments(selectedYear, selectedTerm, departmentOptionsAbortController).then(
-				(response) => (departmentOptions = response.data)
-			).catch(error => error);
+			getDepartments(selectedYear, selectedTerm, departmentOptionsAbortController)
+				.then((response) => (departmentOptions = response))
+				.catch((error) => error);
 		}
 	}
 
-    $: {
-        yearOptions.sort((a,b) => Number.parseInt(b.value) - Number.parseInt(a.value))
-    }
+	$: {
+		yearOptions.sort((a, b) => Number.parseInt(b.value) - Number.parseInt(a.value));
+	}
 </script>
 
 <LayoutGrid>

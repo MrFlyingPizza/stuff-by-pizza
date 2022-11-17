@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 export const BASE_URL = 'http://www.sfu.ca/bin/wcm/course-outlines?'
 export const ABBR_DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
@@ -113,25 +111,25 @@ export function buildUrl(
 }
 
 export async function getYears(abortController?: AbortController) {
-    return await axios.get<Year[]>(buildUrl(), { signal: abortController?.signal })
+    return await fetch(buildUrl(), { signal: abortController?.signal }).then<Year[]>(response => response.json())
 }
 
 export async function getTerms(year: string, abortController?: AbortController) {
-    return await axios.get<Term[]>(buildUrl(year), { signal: abortController?.signal })
+    return await fetch(buildUrl(year), { signal: abortController?.signal }).then<Term[]>(response => response.json())
 }
 
 export async function getDepartments(year: string, term: string, abortController?: AbortController) {
-    return await axios.get<Department[]>(buildUrl(year, term), { signal: abortController?.signal })
+    return await fetch(buildUrl(year, term), { signal: abortController?.signal }).then<Department[]>(response => response.json())
 }
 
 export async function getCourses(year: string, term: string, department: string, abortController?: AbortController) {
-    return await axios.get<Course[]>(buildUrl(year, term, department), { signal: abortController?.signal })
+    return await fetch(buildUrl(year, term, department), { signal: abortController?.signal }).then<Course[]>(response => response.json())
 }
 
 export async function getSections(year: string, term: string, department: string, courseNumber: string, abortController?: AbortController) {
-    return await axios.get<Section[]>(buildUrl(year, term, department, courseNumber), { signal: abortController?.signal })
+    return await fetch(buildUrl(year, term, department, courseNumber), { signal: abortController?.signal }).then<Section[]>(response => response.json())
 }
 
 export async function getCourseOutline(year: string, term: string, department: string, courseNumber: string, courseSection: string, abortController?: AbortController) {
-    return await axios.get<CourseOutline>(buildUrl(year, term, department, courseNumber, courseSection), { signal: abortController?.signal })
+    return await fetch(buildUrl(year, term, department, courseNumber, courseSection), { signal: abortController?.signal }).then<CourseOutline>(response => response.json())
 }

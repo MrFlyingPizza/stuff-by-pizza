@@ -14,9 +14,9 @@
 	$: {
 		sectionAbortController?.abort();
 		sectionAbortController = new AbortController();
-		getSections(year, term, department, courseNumber, sectionAbortController).then(
-			(response) => (courseSections = response.data)
-		).catch(error => error);
+		getSections(year, term, department, courseNumber, sectionAbortController)
+			.then((response) => (courseSections = response))
+			.catch((error) => error);
 	}
 </script>
 

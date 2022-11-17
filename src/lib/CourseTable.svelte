@@ -17,10 +17,12 @@
 	$: {
 		coursesAbortController?.abort();
 		coursesAbortController = new AbortController();
-		getCourses(year, term, department, coursesAbortController).then((response) => {
-			courses = response.data;
-			loaded = true;
-		}).catch(error => error);
+		getCourses(year, term, department, coursesAbortController)
+			.then((response) => {
+				courses = response;
+				loaded = true;
+			})
+			.catch((error) => error);
 	}
 </script>
 
