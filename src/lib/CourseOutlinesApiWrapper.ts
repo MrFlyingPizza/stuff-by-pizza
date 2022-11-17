@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://www.sfu.ca/bin/wcm/course-outlines?'
+export const BASE_URL = 'https://www.sfu.ca/bin/wcm/course-outlines?'
 export const ABBR_DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
 export interface Year {
