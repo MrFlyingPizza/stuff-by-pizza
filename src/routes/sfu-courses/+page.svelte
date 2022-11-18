@@ -11,10 +11,14 @@
 		type Term,
 		type Year
 	} from '$lib/CourseOutlinesApiWrapper';
+	import { year, term, department } from './options';
 
-	let selectedYear: string = '';
-	let selectedTerm: string = '';
-	let selectedDepartment: string = '';
+	/** @type {import('./$types').PageData} */
+	export let data;
+
+	$year = data.year;
+	$term = data.term;
+	$department = data.department;
 
 	let yearOptions: Year[] = [];
 	let termOptions: Term[] = [];
@@ -26,9 +30,9 @@
 
 	$: {
 		termOptionsAbortController?.abort();
-		if (selectedYear) {
+		if ($year) {
 			termOptionsAbortController = new AbortController();
-			getTerms(selectedYear, termOptionsAbortController).then(
+			getTerms($year, termOptionsAbortController).then(
 				(response) => (termOptions = response)
 			);
 		}
@@ -38,9 +42,9 @@
 
 	$: {
 		departmentOptionsAbortController?.abort();
-		if (selectedYear && selectedTerm) {
+		if ($year && $term) {
 			departmentOptionsAbortController = new AbortController();
-			getDepartments(selectedYear, selectedTerm, departmentOptionsAbortController)
+			getDepartments($year, $term, departmentOptionsAbortController)
 				.then((response) => (departmentOptions = response))
 				.catch((error) => error);
 		}
@@ -55,19 +59,19 @@
 	<Cell span={12}>
 		<Card variant="outlined">
 			<Content>
-				<Select bind:value={selectedYear} label="Year">
+				<Select bind:value={$year} label="Year">
 					{#each yearOptions as yearOption}
 						<Option value={yearOption.value}>{yearOption.text}</Option>
 					{/each}
 				</Select>
-				<Select disabled={termOptions.length <= 0} bind:value={selectedTerm} label="Term">
+				<Select disabled={termOptions.length <= 0} bind:value={$term} label="Term">
 					{#each termOptions as termOption}
 						<Option value={termOption.value}>{termOption.text}</Option>
 					{/each}
 				</Select>
 				<Select
 					disabled={departmentOptions.length <= 0}
-					bind:value={selectedDepartment}
+					bind:value={$department}
 					label="Department"
 				>
 					{#each departmentOptions as departmentOption}
@@ -78,8 +82,8 @@
 		</Card>
 	</Cell>
 	<Cell span={12}>
-		{#if selectedYear && selectedTerm && selectedDepartment}
-			<CourseTable year={selectedYear} term={selectedTerm} department={selectedDepartment} />
+		{#if $year && $term && $department}
+			<CourseTable year={$year} term={$term} department={$department} />
 		{/if}
 	</Cell>
 </LayoutGrid>

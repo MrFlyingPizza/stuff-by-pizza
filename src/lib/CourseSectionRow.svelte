@@ -4,6 +4,7 @@
 		type CourseOutline,
 		type CourseSchedule
 	} from './CourseOutlinesApiWrapper';
+	import CourseSectionDay from './CourseSectionDay.svelte';
 
 	export let year: string;
 	export let term: string;
@@ -15,7 +16,14 @@
 
 	let outline: CourseOutline;
 
-	let days: boolean[] = [false, false, false, false, false];
+	type Day = {
+		startTime?: string;
+		endTime?: string;
+		active: boolean;
+		abbr: string;
+	};
+
+	let days: Day[] = new Array(5);
 
 	getCourseOutline(year, term, department, courseNumber, courseSection)
 		.then((response) => (outline = response))
@@ -27,7 +35,11 @@
 			for (const s of outline.courseSchedule) {
 				for (let i = 0; i < abbrs.length; i++) {
 					if (s.days.includes(abbrs[i])) {
-						days[i] = true;
+						days[i] = { active: true, abbr: abbrs[i] };
+						if (s.startTime && s.endTime) {
+							days[i].startTime = s.startTime;
+							days[i].endTime = s.endTime;
+						}
 					}
 				}
 			}
@@ -35,26 +47,28 @@
 	}
 </script>
 
-<table>
-	<tr>
-		<td class="day">{courseSection}</td>
+<tr>
+	<td class="section-box">
+		{#if outline?.info?.outlinePath}
+			<a href={'https://www.sfu.ca/outlines.html?' + outline.info.outlinePath}>
+				{courseSection.toUpperCase()}
+			</a>
+		{:else}
+			{courseSection.toUpperCase()}
+		{/if}
+	</td>
+	<td>
 		{#each days as day}
-			<td class={'day ' + (day ? 'dayon' : 'dayoff')} />
+			<CourseSectionDay {...day} />
 		{/each}
-	</tr>
-</table>
+	</td>
+</tr>
 
 <style>
-	.day {
-		border: 1px solid black;
-		width: 50px;
-	}
-
-	.dayon {
-		background-color: aqua;
-	}
-
-	.dayoff {
-		background-color: black;
+	.section-box {
+		width: 30px;
+		margin: none;
+		padding: none;
+		font-size: 10px;
 	}
 </style>

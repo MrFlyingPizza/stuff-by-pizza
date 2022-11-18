@@ -20,7 +20,7 @@
 	}
 </script>
 
-<table>
+<table cellpadding="0" width="100%">
 	{#each courseSections as courseSection}
 		<CourseSectionRow
 			{year}
@@ -31,3 +31,9 @@
 		/>
 	{/each}
 </table>
+
+<style>
+	table {
+		table-layout: fixed;
+	}
+</style>
