@@ -42,7 +42,7 @@
 
 			const increment = width / totalHours;
 			for (let i = 0; i < totalHours; i++) {
-				context.fillStyle = '#EEEEEE';
+				context.fillStyle = i == 0 ? 'black' : '#EEEEEE';
 				context.fillRect(i * increment, 0, 1, height);
 			}
 		}
