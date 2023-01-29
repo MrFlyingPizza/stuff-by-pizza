@@ -43,9 +43,6 @@
 			<th scope="colgroup">Thursday</th>
 			<th scope="colgroup">Friday</th>
 		</tr>
-		<tr>
-			<th scope="col">7:00AM</th>
-		</tr>
 	</thead>
 	<tbody>
 		{#if year && term && department}
