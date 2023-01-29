@@ -1,7 +1,4 @@
 <script lang="ts">
-	import LayoutGrid, { Cell } from '@smui/layout-grid';
-	import Card, { Content } from '@smui/card';
-	import Select, { Option } from '@smui/select';
 	import CourseTable from '$lib/CourseTable.svelte';
 	import {
 		getDepartments,
@@ -10,80 +7,115 @@
 		type Department,
 		type Term,
 		type Year
-	} from '$lib/CourseOutlinesApiWrapper';
-	import { year, term, department } from './options';
+	} from '$lib/course-outlines-api';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	export let data: {
+		year: string | undefined;
+		term: string | undefined;
+		department: string | undefined;
+	};
 
-	$year = data.year;
-	$term = data.term;
-	$department = data.department;
+	let year = data.year;
+	let term = data.term;
+	let department = data.department;
 
-	let yearOptions: Year[] = [];
-	let termOptions: Term[] = [];
-	let departmentOptions: Department[] = [];
+	let isMounted = false;
 
-	getYears().then((response) => (yearOptions = response));
-
-	let termOptionsAbortController: AbortController;
-
-	$: {
-		termOptionsAbortController?.abort();
-		if ($year) {
-			termOptionsAbortController = new AbortController();
-			getTerms($year, termOptionsAbortController).then(
-				(response) => (termOptions = response)
-			);
+	function updateLocalStorage(key: string, value: string | null) {
+		if (value == null) {
+			localStorage.removeItem(key);
+		} else {
+			localStorage.setItem(key, value);
 		}
 	}
 
-	let departmentOptionsAbortController: AbortController;
-
-	$: {
-		departmentOptionsAbortController?.abort();
-		if ($year && $term) {
-			departmentOptionsAbortController = new AbortController();
-			getDepartments($year, $term, departmentOptionsAbortController)
-				.then((response) => (departmentOptions = response))
-				.catch((error) => error);
-		}
+	$: if (browser) {
+		updateLocalStorage('year', year ? year : null);
+		updateLocalStorage('term', term ? term : null);
+		updateLocalStorage('department', department ? department : null);
 	}
 
-	$: {
-		yearOptions.sort((a, b) => Number.parseInt(b.value) - Number.parseInt(a.value));
+	let years: Year[] = [];
+	let terms: Term[] = [];
+	let departments: Department[] = [];
+
+	onMount(() => {
+		getYears()
+			.then((data) => (years = data.reverse()))
+			.catch(console.error);
+	});
+
+	let termsController: AbortController;
+	$: if (year) {
+		termsController?.abort();
+		termsController = new AbortController();
+		getTerms({ year }, termsController.signal)
+			.then((data) => (terms = data))
+			.catch(console.error);
+	}
+
+	let departmentsController: AbortController;
+	$: if (year && term) {
+		departmentsController?.abort();
+		departmentsController = new AbortController();
+		getDepartments({ year, term }, departmentsController.signal)
+			.then((data) => (departments = data))
+			.catch(console.error);
 	}
 </script>
 
-<LayoutGrid>
-	<Cell span={12}>
-		<Card variant="outlined">
-			<Content>
-				<Select bind:value={$year} label="Year">
-					{#each yearOptions as yearOption}
-						<Option value={yearOption.value}>{yearOption.text}</Option>
-					{/each}
-				</Select>
-				<Select disabled={termOptions.length <= 0} bind:value={$term} label="Term">
-					{#each termOptions as termOption}
-						<Option value={termOption.value}>{termOption.text}</Option>
-					{/each}
-				</Select>
-				<Select
-					disabled={departmentOptions.length <= 0}
-					bind:value={$department}
-					label="Department"
-				>
-					{#each departmentOptions as departmentOption}
-						<Option value={departmentOption.value}>{departmentOption.text}</Option>
-					{/each}
-				</Select>
-			</Content>
-		</Card>
-	</Cell>
-	<Cell span={12}>
-		{#if $year && $term && $department}
-			<CourseTable year={$year} term={$term} department={$department} />
+<div class="container-lg">
+	<h1>SFU Course Outlines List</h1>
+	<h6>Cuz im fed up with the sfu website.</h6>
+	<div>
+		<div class="row">
+			{#if years.length > 0}
+				<div class="col">
+					<label for="yearSelect">Year</label>
+					<select id="yearSelect" bind:value={year}>
+						{#each years as yearOption}
+							<option value={yearOption.value}>{yearOption.text}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
+			{#if terms.length > 0}
+				<div class="col">
+					<label for="termSelect">Term</label>
+					<select id="termSelect" bind:value={term} disabled={year == null}>
+						{#each terms as termOption}
+							<option value={termOption.value}>{termOption.text}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
+			{#if departments.length > 0}
+				<div class="col">
+					<label for="departmentSelect">Department</label>
+					<select
+						id="departmentSelect"
+						bind:value={department}
+						disabled={year == null || term == null}
+					>
+						{#each departments as departmentOption}
+							<option value={departmentOption.value}>{departmentOption.text}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
+		</div>
+	</div>
+	<div class="table-container">
+		{#if year && term && department}
+			<CourseTable {year} {term} {department} />
 		{/if}
-	</Cell>
-</LayoutGrid>
+	</div>
+</div>
+
+<style lang="scss">
+	.table-container {
+		overflow-x: auto;
+	}
+</style>

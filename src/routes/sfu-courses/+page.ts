@@ -1,8 +1,12 @@
-/** @type {import('./$types').PageLoad} */
-export function load({ params }: { params: { year?: string, term?: string, department?: string } }) {
-    return {
-        year: params.year,
-        term: params.term,
-        department: params.department
-    }
-}
+import { browser } from '$app/environment';
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = () => {
+	if (browser) {
+		return {
+			year: localStorage.getItem('year'),
+			term: localStorage.getItem('term'),
+			department: localStorage.getItem('department')
+		};
+	}
+};
