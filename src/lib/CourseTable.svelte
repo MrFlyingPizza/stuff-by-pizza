@@ -30,7 +30,7 @@
 			<th rowspan="2" style="width: 10em;">Title</th>
 			<th rowspan="2" scope="col" style="width: 4em;">Section Number</th>
 			<th rowspan="2" scope="col" style="width: 4em;">Type</th>
-			<th colspan="5" scope="colgroup">Days</th>
+			<th colspan="5" scope="colgroup">Schedule</th>
 		</tr>
 		<tr class="child-borders">
 			<th scope="colgroup">Monday</th>

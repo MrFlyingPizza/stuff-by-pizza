@@ -84,65 +84,89 @@
 			.then((data) => (departments = data))
 			.catch(console.error);
 	}
+
+	//-- header control
+	let headerOpen = true;
+
+	$: console.log(headerOpen);
 </script>
 
-<div class="container-lg">
-	<h1>SFU Course Outlines List</h1>
-	<h6>Cuz im fed up with the sfu website.</h6>
-	<div>
-		<div class="row">
-			<div class="col">
-				<div class="form-group">
-					<label for="year-select">Year</label>
-					<select id="year-select" bind:value={year} on:change={handleYearChange}>
-						{#each years as yearOption}
-							<option value={yearOption.value}>{yearOption.text}</option>
-						{/each}
-					</select>
+<main>
+	<header>
+		<main
+			class={`header-content ${
+				headerOpen ? 'show-header border border-primary border-5' : 'hide-header'
+			}`}
+		>
+			<h2>SFU Course Outlines List</h2>
+			<span>Cuz im fed up with the sfu website.</span>
+			<div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="year-select">Year</label>
+							<select id="year-select" bind:value={year} on:change={handleYearChange}>
+								{#each years as yearOption}
+									<option value={yearOption.value}>{yearOption.text}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="term-select">Term</label>
+							<select
+								id="term-select"
+								disabled={year == undefined}
+								bind:value={term}
+								on:change={handleTermChange}
+							>
+								{#each terms as termOption}
+									<option value={termOption.value}>{termOption.text}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="department-select">Department</label>
+							<select id="department-select" disabled={term == undefined} bind:value={department}>
+								{#each departments as departmentOption}
+									<option value={departmentOption.value}>{departmentOption.text}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="weekday-bar-size">Weekday Bar Size</label>
+							<input
+								id="weekday-bar-size"
+								class="input-block"
+								type="range"
+								name="bar-size"
+								min="0"
+								max="100"
+								bind:value={weekDayBarSize}
+							/>
+							<output id="weekday-bar-size-output" for="weekday-bar-size">{weekDayBarSize}%</output>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="col">
-				<div class="form-group">
-					<label for="term-select">Term</label>
-					<select
-						id="term-select"
-						disabled={year == undefined}
-						bind:value={term}
-						on:change={handleTermChange}
-					>
-						{#each terms as termOption}
-							<option value={termOption.value}>{termOption.text}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
-			<div class="col">
-				<div class="form-group">
-					<label for="department-select">Department</label>
-					<select id="department-select" disabled={term == undefined} bind:value={department}>
-						{#each departments as departmentOption}
-							<option value={departmentOption.value}>{departmentOption.text}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
-			<div class="col">
-				<div class="form-group">
-					<label for="weekday-bar-size">Weekday Bar Size</label>
-					<input
-						id="weekday-bar-size"
-						class="input-block"
-						type="range"
-						name="bar-size"
-						min="0"
-						max="100"
-						bind:value={weekDayBarSize}
-					/>
-					<output id="weekday-bar-size-output" for="weekday-bar-size">{weekDayBarSize}%</output>
-				</div>
-			</div>
+		</main>
+		<div id="header-button">
+			<fieldset class="form-group">
+				<label for="paperSwitch1" class="paper-switch-tile">
+					<input id="paperSwitch1" name="paperSwitch1" type="checkbox" bind:checked={headerOpen} />
+					<div class="paper-switch-tile-card border">
+						<div class="paper-switch-tile-card-front border background-secondary">Open</div>
+						<div class="paper-switch-tile-card-back border background-primary">Close</div>
+					</div>
+				</label>
+			</fieldset>
 		</div>
-	</div>
+	</header>
 	{#if year && term && department}
 		<div class="table-container">
 			<CourseTable
@@ -153,12 +177,37 @@
 			/>
 		</div>
 	{/if}
-</div>
+</main>
 
 <style lang="scss">
+	#header-button {
+		position: absolute;
+		right: 0;
+	}
+
 	.table-container {
 		overflow-x: auto;
-		min-height: 80vh;
+		height: 100vh;
+	}
+
+	header {
+		position: sticky;
+		top: 0;
+	}
+
+	.header-content {
+		transition: max-height 0.5s, border 0.2s ease 0.5s;
+		background-color: white;
+		overflow: hidden;
+	}
+
+	.show-header {
+		max-height: 85vh;
+		overflow: auto;
+	}
+
+	.hide-header {
+		max-height: 0;
 	}
 
 	select {
