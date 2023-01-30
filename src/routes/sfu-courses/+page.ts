@@ -6,7 +6,8 @@ export const load: PageLoad = () => {
 		return {
 			year: localStorage.getItem('year'),
 			term: localStorage.getItem('term'),
-			department: localStorage.getItem('department')
+			department: localStorage.getItem('department'),
+			weekDayBarSize: localStorage.getItem('weekDayBarSize')
 		};
 	}
 };

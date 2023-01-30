@@ -10,17 +10,18 @@
 	} from '$lib/course-outlines-api';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { select_value } from 'svelte/internal';
 
 	export let data: {
 		year: string | undefined;
 		term: string | undefined;
 		department: string | undefined;
+		weekDayBarSize: string | undefined;
 	};
 
 	let year = data.year;
 	let term = data.term;
 	let department = data.department;
+	let weekDayBarSize = data.weekDayBarSize ? parseInt(data.weekDayBarSize) : 10;
 
 	function updateLocalStorage(key: string, value: string | null) {
 		if (value == null) {
@@ -30,6 +31,22 @@
 		}
 	}
 
+	$: if (browser) {
+		updateLocalStorage('year', year ? year : null);
+	}
+
+	$: if (browser) {
+		updateLocalStorage('term', term ? term : null);
+	}
+
+	$: if (browser) {
+		updateLocalStorage('department', department ? department : null);
+	}
+
+	$: if (browser) {
+		updateLocalStorage('weekDayBarSize', weekDayBarSize.toString());
+	}
+
 	function handleTermChange() {
 		department = undefined;
 	}
@@ -37,12 +54,6 @@
 	function handleYearChange() {
 		term = undefined;
 		handleTermChange();
-	}
-
-	$: if (browser) {
-		updateLocalStorage('year', year ? year : null);
-		updateLocalStorage('term', term ? term : null);
-		updateLocalStorage('department', department ? department : null);
 	}
 
 	let years: Year[] = [];
@@ -73,9 +84,6 @@
 			.then((data) => (departments = data))
 			.catch(console.error);
 	}
-
-	let weekDayBarSizeInput: HTMLInputElement;
-	let weekDayBarSize = 10;
 </script>
 
 <div class="container-lg">
@@ -141,7 +149,7 @@
 				{year}
 				{term}
 				{department}
-				weekDayBarWidth={200 + (weekDayBarSize / 100) * 1000}
+				weekDayBarWidth={100 + (weekDayBarSize / 100) * 1000}
 			/>
 		</div>
 	{/if}
