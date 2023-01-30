@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
 
 export const BASE_URL = 'https://www.sfu.ca/bin/wcm/course-outlines?';
 export type WeekDayAbbreviations = 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa' | 'Su';
@@ -119,16 +120,19 @@ type CoursesListRequestParams = DepartmentsListRequestParams & { department: str
 type CourseSectionsListRequestParams = CoursesListRequestParams & { courseNumber: string };
 type CourseOutlineRequestParams = CourseSectionsListRequestParams & { courseSection: string };
 
-const courseOutlinesApi = axios.create({
-	baseURL: 'https://www.sfu.ca/bin/wcm/course-outlines',
-	paramsSerializer: {
-		serialize: (params) => {
-			return Object.values(params)
-				.filter((item) => item != null)
-				.join('/');
+const courseOutlinesApi = setupCache(
+	axios.create({
+		baseURL: 'https://www.sfu.ca/bin/wcm/course-outlines',
+		paramsSerializer: {
+			serialize: (params) => {
+				return Object.values(params)
+					.filter((item) => item != null)
+					.join('/');
+			}
 		}
-	}
-});
+	}),
+	{ cacheTakeover: false }
+);
 
 async function query<P extends object, R>(params: P, signal?: AbortSignal): Promise<R> {
 	return courseOutlinesApi.get('', { params, signal }).then<R>((response) => response.data);
