@@ -5,35 +5,31 @@
 	export let year: string;
 	export let term: string;
 	export let department: string;
-
-	let courses: Course[] = [];
-
-	let loaded: boolean = false;
+	export let weekDayBarWidth = 500;
 
 	let coursesController: AbortController;
-
+	let coursesRequest: Promise<Course[]>;
 	$: {
 		coursesController?.abort();
 		coursesController = new AbortController();
-		getCourses({ year, term, department }, coursesController.signal)
-			.then((data) => {
-				courses = data;
-				loaded = true;
-			})
-			.catch(console.error);
+		coursesRequest = getCourses({ year, term, department }, coursesController.signal);
 	}
 </script>
 
-<table align="left" class="table-hover">
+<table class="table-hover">
+	<colgroup>
+		<col />
+		<col />
+		<col />
+		<col />
+		<col span="5" class="weekday-columns" style={`width: ${weekDayBarWidth}px`} />
+	</colgroup>
 	<thead>
 		<tr>
-			<th rowspan="3">Course #</th>
-			<th rowspan="3">Title</th>
-			<th colspan="3" scope="colgroup">Sections</th>
-		</tr>
-		<tr>
-			<th rowspan="2" scope="col">#</th>
-			<th rowspan="2" scope="col">Type</th>
+			<th rowspan="2" style="width: 4em;">Course Number</th>
+			<th rowspan="2" style="width: 10em;">Title</th>
+			<th rowspan="2" scope="col" style="width: 4em;">Section Number</th>
+			<th rowspan="2" scope="col" style="width: 4em;">Type</th>
 			<th colspan="5" scope="colgroup">Days</th>
 		</tr>
 		<tr class="child-borders">
@@ -45,15 +41,32 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#if year && term && department}
-			{#each courses as course (course.value)}
-				<CourseTableRow {year} {term} {department} {course} />
-			{/each}
-		{:else}
-			<h3>Please provide the above fields.</h3>
-		{/if}
+		{#await coursesRequest}
+			<tr>
+				<td colspan="9">
+					<p>Loading courses...</p>
+				</td>
+			</tr>
+		{:then courses}
+			{#key courses}
+				{#each courses as course}
+					<CourseTableRow {year} {term} {department} {course} />
+				{/each}
+			{/key}
+		{:catch}
+			<tr>
+				<td colspan="9">Failed to load courses. Maybe check your selections?</td>
+			</tr>
+		{/await}
 	</tbody>
 </table>
 
 <style lang="scss">
+	table {
+		table-layout: fixed;
+	}
+
+	.weekday-columns {
+		transition: width 0.2s ease-out;
+	}
 </style>

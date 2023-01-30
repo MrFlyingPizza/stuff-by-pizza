@@ -90,7 +90,7 @@ export interface CourseInfo {
 }
 
 export interface CourseOutline {
-	courseSchedule: CourseSchedule[];
+	courseSchedule?: CourseSchedule[];
 	info: CourseInfo;
 	instructor: Instructor[];
 	requiredText: Textbook[];

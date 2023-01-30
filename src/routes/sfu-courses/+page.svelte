@@ -10,6 +10,7 @@
 	} from '$lib/course-outlines-api';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { select_value } from 'svelte/internal';
 
 	export let data: {
 		year: string | undefined;
@@ -21,14 +22,21 @@
 	let term = data.term;
 	let department = data.department;
 
-	let isMounted = false;
-
 	function updateLocalStorage(key: string, value: string | null) {
 		if (value == null) {
 			localStorage.removeItem(key);
 		} else {
 			localStorage.setItem(key, value);
 		}
+	}
+
+	function handleTermChange() {
+		department = undefined;
+	}
+
+	function handleYearChange() {
+		term = undefined;
+		handleTermChange();
 	}
 
 	$: if (browser) {
@@ -38,9 +46,6 @@
 	}
 
 	let years: Year[] = [];
-	let terms: Term[] = [];
-	let departments: Department[] = [];
-
 	onMount(() => {
 		getYears()
 			.then((data) => (years = data.reverse()))
@@ -48,7 +53,9 @@
 	});
 
 	let termsController: AbortController;
+	let terms: Term[] = [];
 	$: if (year) {
+		terms = [];
 		termsController?.abort();
 		termsController = new AbortController();
 		getTerms({ year }, termsController.signal)
@@ -57,13 +64,18 @@
 	}
 
 	let departmentsController: AbortController;
+	let departments: Department[] = [];
 	$: if (year && term) {
+		departments = [];
 		departmentsController?.abort();
 		departmentsController = new AbortController();
 		getDepartments({ year, term }, departmentsController.signal)
 			.then((data) => (departments = data))
 			.catch(console.error);
 	}
+
+	let weekDayBarSizeInput: HTMLInputElement;
+	let weekDayBarSize = 10;
 </script>
 
 <div class="container-lg">
@@ -71,51 +83,81 @@
 	<h6>Cuz im fed up with the sfu website.</h6>
 	<div>
 		<div class="row">
-			{#if years.length > 0}
-				<div class="col">
-					<label for="yearSelect">Year</label>
-					<select id="yearSelect" bind:value={year}>
+			<div class="col">
+				<div class="form-group">
+					<label for="year-select">Year</label>
+					<select id="year-select" bind:value={year} on:change={handleYearChange}>
 						{#each years as yearOption}
 							<option value={yearOption.value}>{yearOption.text}</option>
 						{/each}
 					</select>
 				</div>
-			{/if}
-			{#if terms.length > 0}
-				<div class="col">
-					<label for="termSelect">Term</label>
-					<select id="termSelect" bind:value={term} disabled={year == null}>
+			</div>
+			<div class="col">
+				<div class="form-group">
+					<label for="term-select">Term</label>
+					<select
+						id="term-select"
+						disabled={year == undefined}
+						bind:value={term}
+						on:change={handleTermChange}
+					>
 						{#each terms as termOption}
 							<option value={termOption.value}>{termOption.text}</option>
 						{/each}
 					</select>
 				</div>
-			{/if}
-			{#if departments.length > 0}
-				<div class="col">
-					<label for="departmentSelect">Department</label>
-					<select
-						id="departmentSelect"
-						bind:value={department}
-						disabled={year == null || term == null}
-					>
+			</div>
+			<div class="col">
+				<div class="form-group">
+					<label for="department-select">Department</label>
+					<select id="department-select" disabled={term == undefined} bind:value={department}>
 						{#each departments as departmentOption}
 							<option value={departmentOption.value}>{departmentOption.text}</option>
 						{/each}
 					</select>
 				</div>
-			{/if}
+			</div>
+			<div class="col">
+				<div class="form-group">
+					<label for="weekday-bar-size">Weekday Bar Size</label>
+					<input
+						id="weekday-bar-size"
+						class="input-block"
+						type="range"
+						name="bar-size"
+						min="0"
+						max="100"
+						bind:value={weekDayBarSize}
+					/>
+					<output id="weekday-bar-size-output" for="weekday-bar-size">{weekDayBarSize}%</output>
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="table-container">
-		{#if year && term && department}
-			<CourseTable {year} {term} {department} />
-		{/if}
-	</div>
+	{#if year && term && department}
+		<div class="table-container">
+			<CourseTable
+				{year}
+				{term}
+				{department}
+				weekDayBarWidth={200 + (weekDayBarSize / 100) * 1000}
+			/>
+		</div>
+	{/if}
 </div>
 
 <style lang="scss">
 	.table-container {
 		overflow-x: auto;
+		min-height: 80vh;
+	}
+
+	select {
+		min-width: 6em;
+	}
+
+	input[type='range'] {
+		width: 200px;
 	}
 </style>

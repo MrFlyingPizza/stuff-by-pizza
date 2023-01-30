@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { scale } from 'svelte/transition';
+
 	export let startTime: string;
 	export let endTime: string;
 	export let maxHours = 22;
@@ -25,13 +27,13 @@
 	}
 </script>
 
-<div class="progress" style="width: 500px;">
+<div class="progress" in:scale>
 	<div
 		class="bar variable-bar"
 		style={`margin-left: ${leftMarginPercent}%; width: ${widthPercent}%`}
 	>
-		<p class="start-time-marker">{startTime}</p>
-		<p class="end-time-marker">{endTime}</p>
+		<p>{startTime}</p>
+		<p>{endTime}</p>
 	</div>
 </div>
 
@@ -43,9 +45,5 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
-	}
-	.start-time-marker {
-	}
-	.end-time-marker {
 	}
 </style>
