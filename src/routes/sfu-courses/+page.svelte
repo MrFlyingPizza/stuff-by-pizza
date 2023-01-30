@@ -87,13 +87,11 @@
 
 	//-- header control
 	let headerOpen = true;
-
-	$: console.log(headerOpen);
 </script>
 
 <main>
 	<header>
-		<main
+		<div
 			class={`header-content ${
 				headerOpen ? 'show-header border border-primary border-5' : 'hide-header'
 			}`}
@@ -154,7 +152,7 @@
 					</div>
 				</div>
 			</div>
-		</main>
+		</div>
 		<div id="header-button">
 			<fieldset class="form-group">
 				<label for="paperSwitch1" class="paper-switch-tile">
@@ -180,14 +178,20 @@
 </main>
 
 <style lang="scss">
+	main {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+	}
+
 	#header-button {
 		position: absolute;
 		right: 0;
 	}
 
 	.table-container {
-		overflow-x: auto;
-		height: 100vh;
+		overflow: auto;
+		flex-flow: 1;
 	}
 
 	header {
