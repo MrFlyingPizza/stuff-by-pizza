@@ -202,7 +202,7 @@
 	}
 
 	.show-header {
-		max-height: 85vh;
+		max-height: calc(100vh - 80px);
 		overflow: auto;
 	}
 
