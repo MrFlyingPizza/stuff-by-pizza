@@ -45,9 +45,9 @@
 		getCourseOutline({
 			year,
 			term,
-			department,
-			courseNumber: course.value,
-			courseSection: courseSection.value
+			dept: department,
+			number: course.value,
+			section: courseSection.value
 		})
 			.then((data) => (weekDayTimes = createWeekDayTimes(data)))
 			.catch(console.error)

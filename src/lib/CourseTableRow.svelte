@@ -16,8 +16,8 @@
 		getCourseSections({
 			year,
 			term,
-			department,
-			courseNumber: course.value
+			dept: department,
+			number: course.value
 		})
 			.then((data) => (courseSections = data))
 			.catch(console.error)

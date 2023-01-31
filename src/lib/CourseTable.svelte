@@ -12,7 +12,7 @@
 	$: {
 		coursesController?.abort();
 		coursesController = new AbortController();
-		coursesRequest = getCourses({ year, term, department }, coursesController.signal);
+		coursesRequest = getCourses({ year, term, dept: department }, coursesController.signal);
 	}
 </script>
 

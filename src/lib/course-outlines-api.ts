@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-interceptor';
 
-export const BASE_URL = 'https://www.sfu.ca/bin/wcm/course-outlines?';
 export type WeekDayAbbreviations = 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa' | 'Su';
 
 export interface Year {
@@ -97,39 +96,31 @@ export interface CourseOutline {
 	requiredText: Textbook[];
 }
 
-export function buildUrl(
-	year?: string,
-	term?: string,
-	department?: string,
-	courseNumber?: string,
-	courseSection?: string
-): string {
-	let result = BASE_URL;
-
-	for (const pathVar of [year, term, department, courseNumber, courseSection]) {
-		if (!pathVar) break;
-		result += pathVar + '/';
-	}
-	return result;
-}
-
 type YearsListRequestParams = object;
-type TermsListRequestParams = YearsListRequestParams & { year: string };
-type DepartmentsListRequestParams = TermsListRequestParams & { term: string };
-type CoursesListRequestParams = DepartmentsListRequestParams & { department: string };
-type CourseSectionsListRequestParams = CoursesListRequestParams & { courseNumber: string };
-type CourseOutlineRequestParams = CourseSectionsListRequestParams & { courseSection: string };
+type TermsListRequestParams = YearsListRequestParams & {
+	/**Which school year, 2010, 2011, 2023, etc. */
+	year: string;
+};
+type DepartmentsListRequestParams = TermsListRequestParams & {
+	/**Which semester, FALL, SUMMER, SPRING, etc. */
+	term: string;
+};
+type CoursesListRequestParams = DepartmentsListRequestParams & {
+	/**Which department, cmpt, bus, ca, etc. */
+	dept: string;
+};
+type CourseSectionsListRequestParams = CoursesListRequestParams & {
+	/**Which course number, 120, 105W, etc. Does not contain department abbreviation. */
+	number: string;
+};
+type CourseOutlineRequestParams = CourseSectionsListRequestParams & {
+	/**For the course indicated by the course number, this is the number of a section in that course, d100, e200, etc. */
+	section: string;
+};
 
 const courseOutlinesApi = setupCache(
 	axios.create({
-		baseURL: 'https://www.sfu.ca/bin/wcm/course-outlines',
-		paramsSerializer: {
-			serialize: (params) => {
-				return Object.values(params)
-					.filter((item) => item != null)
-					.join('/');
-			}
-		}
+		baseURL: 'https://www.sfu.ca/bin/wcm/course-outlines'
 	}),
 	{ cacheTakeover: false }
 );

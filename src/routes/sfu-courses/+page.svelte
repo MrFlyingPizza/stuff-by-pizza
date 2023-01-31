@@ -167,12 +167,7 @@
 	</header>
 	{#if year && term && department}
 		<div class="table-container">
-			<CourseTable
-				{year}
-				{term}
-				{department}
-				weekDayBarWidth={100 + (weekDayBarSize / 100) * 1000}
-			/>
+			<CourseTable {year} {term} {department} weekDayBarWidth={100 + (weekDayBarSize / 100) * 1000} />
 		</div>
 	{/if}
 </main>
